@@ -1,10 +1,14 @@
 package com.mercadolibre.grupo1.projetointegrador.unit;
 
+import com.mercadolibre.grupo1.projetointegrador.dtos.PurchaseOrderDTO;
 import com.mercadolibre.grupo1.projetointegrador.entities.*;
 import com.mercadolibre.grupo1.projetointegrador.entities.enums.OrderStatus;
 import com.mercadolibre.grupo1.projetointegrador.entities.enums.ProductCategory;
 import com.mercadolibre.grupo1.projetointegrador.exceptions.ListIsEmptyException;
+import com.mercadolibre.grupo1.projetointegrador.exceptions.MissingProductExceptions;
+import com.mercadolibre.grupo1.projetointegrador.exceptions.UnregisteredProducts;
 import com.mercadolibre.grupo1.projetointegrador.repositories.BatchStockRepository;
+import com.mercadolibre.grupo1.projetointegrador.repositories.ProductRepository;
 import com.mercadolibre.grupo1.projetointegrador.repositories.PurchaseOrderRepository;
 import com.mercadolibre.grupo1.projetointegrador.services.PurchaseOrderServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -19,10 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jefferson Botelho, Gabriel Essenio
@@ -39,6 +40,9 @@ public class PurchaseOrderServiceTest {
 
     @InjectMocks
     private PurchaseOrderServiceImpl purchaseOrderService;
+
+    @Mock
+    private ProductRepository productRepository;
 
     /**
      * @author Jefferson Botelho
@@ -100,6 +104,77 @@ public class PurchaseOrderServiceTest {
         Assertions.assertEquals(listBatchStock2.get(0).getCurrentQuantity(), 7);
         Assertions.assertEquals(order.getCustomer().getId(), 1L);
         Assertions.assertThrows(ListIsEmptyException.class, ()-> purchaseOrderService.editExistentOrder(1L, customer2));
+    }
+
+    /**
+     * @author Ederson Rodrigues Araujo
+     */
+    @Test
+    @DisplayName("Testa se retorna exception de produto nao cadastrado")
+    public void testExceptionUregisteredProduct () {
+        PurchaseOrderDTO purchaseOrderDTO = createPurchaseOrderDTO();
+        Customer customer = createCustomer(1L);
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        Throwable messageUnregisteredProduct = Assertions.assertThrows(UnregisteredProducts.class, () ->
+                purchaseOrderService.createPurchaseOrder(purchaseOrderDTO, customer));
+
+        Assertions.assertEquals(
+                messageUnregisteredProduct.getMessage(), "Produto não cadastrado!"
+        );
+    }
+
+    /**
+     * @author Ederson Rodrigues Araujo
+     */
+    @Test
+    @DisplayName("Testa se retorna exception de produtos insuficiente")
+    public void testExceptionMissingProduct () {
+        PurchaseOrderDTO purchaseOrderDTO = createPurchaseOrderDTO();
+        Customer customer = createCustomer(1L);
+        Product product = createProduct(1L, "product1", 1., BigDecimal.valueOf(15), ProductCategory.FRESCO );
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(product));
+        Mockito.when(batchStockRepository.findValidDateItems(Mockito.anyLong())).thenReturn(0D);
+
+        Throwable messageMissingProduct = Assertions.assertThrows(MissingProductExceptions.class, () ->
+                purchaseOrderService.createPurchaseOrder(purchaseOrderDTO, customer));
+
+        Assertions.assertEquals(
+                messageMissingProduct.getMessage(), "product1 insuficiente em estoque!"
+        );
+    }
+
+    /**
+     * @author Ederson Rodrigues Araujo
+     */
+    @Test
+    @DisplayName("Testa se cadastra com sucesso!")
+    public void testSuccessfulCreatePurchaseOrder() {
+        PurchaseOrderDTO purchaseOrderDTO = createPurchaseOrderDTO();
+        Customer customer = createCustomer(1L);
+        PurchaseOrder purchaseOrder = createOrder(customer);
+        Product product = createProduct(1L, "product1", 1., BigDecimal.valueOf(15), ProductCategory.FRESCO );
+
+        Mockito.when(productRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(product));
+        Mockito.when(batchStockRepository.findValidDateItems(Mockito.anyLong())).thenReturn(20D);
+        Mockito.when(purchaseOrderRepository.save(Mockito.any())).thenReturn(purchaseOrder);
+
+        PurchaseOrder testePurchaseOrderSuccessful = purchaseOrderService.createPurchaseOrder(purchaseOrderDTO, customer);
+
+        Assertions.assertEquals(
+                testePurchaseOrderSuccessful.getOrderStatus(), OrderStatus.OPENED
+        );
+
+        Assertions.assertEquals(
+                testePurchaseOrderSuccessful.getProducts().size(), 2
+        );
+
+        Assertions.assertEquals(
+                testePurchaseOrderSuccessful.getCustomer(), customer
+        );
+
     }
 
     /**
@@ -180,6 +255,23 @@ public class PurchaseOrderServiceTest {
         return Arrays.asList(batchStock1, batchStock2);
     }
 
+    // ------------------------------------------------------------
+
+    /**
+     * @author Ederson Rodrigues Araujo
+     * @return
+     */
+    private PurchaseOrderDTO createPurchaseOrderDTO() {
+        PurchaseOrderDTO.PurchaseOrder purchaseOrder = new PurchaseOrderDTO.PurchaseOrder();
+        List<PurchaseOrderDTO.ProductItemDTO> products = new ArrayList<>(Arrays.asList(
+                PurchaseOrderDTO.ProductItemDTO.builder().productId(1L).quantity(20).build()
+        ));
+        purchaseOrder.setProducts(products);
+
+        PurchaseOrderDTO purchaseOrderDTO = new PurchaseOrderDTO();
+        purchaseOrderDTO.setPurchaseOrder(purchaseOrder);
+        return purchaseOrderDTO;
+    }
 }
 
 
