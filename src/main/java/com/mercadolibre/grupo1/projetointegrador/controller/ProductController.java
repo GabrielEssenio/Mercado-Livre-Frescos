@@ -17,7 +17,7 @@ import java.util.List;
  * Controller de Product ,cria os endpoints e trata o retorno de acordo com cada tipo de endpoint
  */
 @RestController
-@RequestMapping("/api/v1/fresh-products/")
+@RequestMapping("/api/v1/fresh-products")
 public class ProductController {
     // Faz injecao de dependencia da camada service
     @Autowired
@@ -31,7 +31,7 @@ public class ProductController {
         return ResponseEntity.ok().body(allProducts);
     }
 
-    // Endpoint do tipo Get, que faz requisicao de produtos de acordo com os status passado no parametro
+    // Endpoint do tipo Get, que faz requisição de produtos de acordo com os status passado no parametro
     @GetMapping("/list")
     public ResponseEntity<List<ProductDTO>> listProductForCategory( @RequestParam(required = false, name = "status") ProductCategory productCategory) {
         List<ProductDTO> productByCategory = productService.listProductByCategory(productCategory);
