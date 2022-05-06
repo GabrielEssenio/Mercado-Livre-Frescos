@@ -31,6 +31,12 @@ Endpoints do Projeto Integrador
 
 [X] [Requisito 05](https://drive.google.com/file/d/1yiEzdwI87K7AO9bgPffHbb0DPjVKM-oP/view)
 
+[x] [Requisito 06](https://github.com/GabrielEssenio/Mercado-Livre-Frescos/blob/develop/Requisito_6_-CRUD_Feedback.docx.pdf)
+
+[x] [Requisito 06](https://github.com/GabrielEssenio/Mercado-Livre-Frescos/blob/develop/Requisito_6_-List_Product_By_Id.docx.pdf)
+
+[x] [Requisito 06](https://github.com/GabrielEssenio/Mercado-Livre-Frescos/blob/develop/Requisito_6_-_List_Product_By_Rating.docx.pdf)
+
 ## Ferramentas e Tecnologias
 - [Java](https://docs.oracle.com/en/java/)
 - [SpringBoot](https://spring.io/projects/spring-boot)
