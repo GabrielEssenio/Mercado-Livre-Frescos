@@ -4,7 +4,9 @@ import com.mercadolibre.grupo1.projetointegrador.dtos.ProductDTO;
 import com.mercadolibre.grupo1.projetointegrador.entities.Product;
 import com.mercadolibre.grupo1.projetointegrador.entities.enums.ProductCategory;
 import com.mercadolibre.grupo1.projetointegrador.exceptions.EntityNotFoundException;
+import com.mercadolibre.grupo1.projetointegrador.exceptions.InvalidRatingException;
 import com.mercadolibre.grupo1.projetointegrador.exceptions.ListIsEmptyException;
+import com.mercadolibre.grupo1.projetointegrador.exceptions.NotFoundException;
 import com.mercadolibre.grupo1.projetointegrador.repositories.ProductRepository;
 import com.mercadolibre.grupo1.projetointegrador.services.ProductService;
 
@@ -24,12 +26,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-/*
+/**
 @author Gabriel Essenio & @author Weverton Bruno
-Teste unitario de Service
+Teste unitario de Service de produtos
  */
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -80,6 +83,7 @@ metodo que gera uma lista de produtosDTO para teste
         product1.setVolume(20.0);
         product1.setPrice(BigDecimal.valueOf(350));
         product1.setCategory(ProductCategory.FRESCO);
+        product1.setAverageRating(4.2);
 
         Product product2 = new Product();
         product2.setId(2L);
@@ -87,6 +91,8 @@ metodo que gera uma lista de produtosDTO para teste
         product2.setVolume(30.0);
         product2.setPrice(BigDecimal.valueOf(450));
         product2.setCategory(ProductCategory.REFRIGERADO);
+        product2.setAverageRating(3.5);
+
 
         Product product3 = new Product();
         product3.setId(3L);
@@ -94,6 +100,8 @@ metodo que gera uma lista de produtosDTO para teste
         product3.setVolume(50.0);
         product3.setPrice(BigDecimal.valueOf(550));
         product3.setCategory(ProductCategory.FRESCO);
+        product3.setAverageRating(3.0);
+
 
         return Arrays.asList(product1,product2, product3);
     }
@@ -143,9 +151,39 @@ metodo que gera uma lista de produtosDTO para teste
     }
 
     /**
+     * @author Gabriel Essenio
+     * REQUISITO 06
+     * Teste Exceçao e mensagem quando nao exite produto com a nota minima passada
+     */
+    @Test
+    @DisplayName("Testa se ao pesquisar produtos por avaliação com uma nota acima das notas do produto é lançada uma exceçao ")
+    public void testReturnExceptionWhenDontExistProductWithMinRating(){
+        List<Product> allProducts = gerarProduct();
+        List<Product> filterProduct = allProducts.stream().filter(prod -> prod.getAverageRating() > 4.3).collect(Collectors.toList());
+        Mockito.when(productRepository.findAllByMinRating(4.3)).thenReturn(filterProduct);
+        Throwable listIsEmptyException = Assertions.assertThrows(ListIsEmptyException.class, () -> productService.listProductByMinRating(4.3));
+        Assertions.assertEquals(listIsEmptyException.getMessage(), "Nenhum produto possui essa nota minima");
+
+        Throwable wrongRatingException = Assertions.assertThrows(InvalidRatingException.class, () -> productService.listProductByMinRating(6.0));
+        Assertions.assertEquals(wrongRatingException.getMessage(), "A avaliaçao dos produtos sao entre 0 e 5, procurar por notas entre essas");
+    }
+
+    /**
+     * @author Gabriel Essenio
+     * REQUISITO 06
+     * Teste Exceçao e mensagem quando pesquisar um produto que nao existe
+     */
+    @Test
+    @DisplayName("Testa se ao pesquisar produtos por avaliação com uma nota acima das notas do produto é lançada uma exceçao ")
+    public void testReturnWhenSearchProductDontExist(){
+        Mockito.when(productRepository.findById(0L)).thenReturn(Optional.empty());
+        Throwable productNotFound = Assertions.assertThrows(NotFoundException.class, () -> productService.getProductById(0L));
+        Assertions.assertEquals(productNotFound.getMessage(), "Nao foi encontrado nenhum produto com esse ID");
+    }
+
+    /**
      * @author Weverton Bruno
      */
-
     @Test
     @DisplayName("Testa se uma exceção de produto nao encontrado é lançado")
     public void itShouldReturnAProductNotFoundException(){
@@ -154,7 +192,6 @@ metodo que gera uma lista de produtosDTO para teste
         Exception exception = assertThrows(EntityNotFoundException.class, () -> {
             productService.findById(1L);
         });
-
         assertEquals("Produto com ID 1 não encontrado", exception.getMessage());
     }
 }

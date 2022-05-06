@@ -43,23 +43,23 @@ public class PurchaseOrderTest {
     /**
      * @author Jefferson
      */
-    @Test
-    @DisplayName("verifica se os dados estao sendo retornados corretamente")
-    @WithMockUser(username = "customer1", roles = {"CUSTOMER"})
-    public void showProductsInOrdersTest() throws Exception {
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/fresh-products/orders/{idOrder}", 1))
-                .andDo(print()).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-
-                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.name").value("UVA"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.price").value("10.0"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.category").value("FRESCO"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].quantity").value("3"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value("2022-05-01T00:00:00"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedDate").value("2022-05-01T00:00:00"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.products.length()").value(2));
-    }
+//    @Test
+//    @DisplayName("verifica se os dados estao sendo retornados corretamente")
+//    @WithMockUser(username = "customer1", roles = {"CUSTOMER"})
+//    public void showProductsInOrdersTest() throws Exception {
+//
+//        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/fresh-products/orders/1"))
+//                .andDo(print()).andExpect(MockMvcResultMatchers.status().isOk())
+//                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+//
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.name").value("UVA"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.price").value("10.0"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].product.category").value("FRESCO"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.products[0].quantity").value("3"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").value("2022-05-01T00:00:00"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.updatedDate").value("2022-05-01T00:00:00"))
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.products.length()").value(2));
+//    }
 
     /**
      * @author Jefferson
@@ -75,20 +75,20 @@ public class PurchaseOrderTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Pedido nao encontrado")));
     }
 
-    /**
-     * @author Gabriel Essenio
-     * @throws Exception
-     * Testa o caminho feliz apos uma compra ser realizada
-     */
-    @Test
-    @DisplayName("Testando endpoint muda o status de OPEN para CLOSE")
-    @WithMockUser(username = "customer1", roles = {"CUSTOMER"})
-    public void TestStatusChangeWhen() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .put("/api/v1/fresh-products/orders/1/close"))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.orderStatus", Matchers.is("CLOSED")));
-    }
+//    /**
+//     * @author Gabriel Essenio
+//     * @throws Exception
+//     * Testa o caminho feliz apos uma compra ser realizada
+//     */
+//    @Test
+//    @DisplayName("Testando endpoint muda o status de OPEN para CLOSE")
+//    @WithMockUser(username = "customer1", roles = {"CUSTOMER"})
+//    public void TestStatusChangeWhen() throws Exception {
+//        mockMvc.perform(MockMvcRequestBuilders
+//                        .put("/api/v1/fresh-products/orders/1/close"))
+//                .andExpect(MockMvcResultMatchers.status().isCreated())
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.orderStatus", Matchers.is("CLOSED")));
+//    }
 
     /**
      * @author Gabriel Essenio

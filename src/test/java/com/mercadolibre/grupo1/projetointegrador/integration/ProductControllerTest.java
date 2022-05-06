@@ -75,4 +75,65 @@ public class ProductControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Categoria inválida")));
     }
+
+    /**
+     @author Gabriel Essenio
+     * REQUISITO 06
+      * Testa Listar produtos pela nota de avaliação minima
+     */
+    @Test
+    @DisplayName("Testa Listar produtos pela nota de avaliação minima")
+    public void TestReturnProductsByRating() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/fresh-products/rating?rating=4"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name", Matchers.is("PERA")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].averageRating", Matchers.is(5.0)));
+    }
+
+    /**
+     @author Gabriel Essenio
+      * REQUISITO 06
+      * Testa Excecao ao passar rating erro pelo parametro
+     */
+    @Test
+    @DisplayName("Testa Excecao ao passar rating erro pelo parametro")
+    public void TestRetunExceptionWhenGetProductByRating() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/fresh-products/rating?rating=6"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("A avaliaçao dos produtos sao entre 0 e 5, procurar por notas entre essas")));
+    }
+
+    /**
+     @author Gabriel Essenio
+      * REQUISITO 06
+      * Testa se retorna produtos pelo ID
+     */
+    @Test
+    @DisplayName("Testa se retorna produtos pelo ID")
+    public void TestReturnProductById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/fresh-products/list-product/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.productId", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.is("UVA")));
+    }
+
+
+    /**
+     @author Gabriel Essenio
+      * REQUISITO 06
+      * Testa Excecao ao passar ID de produto que não existe
+     */
+    @Test
+    @DisplayName("Testa Excecao ao passar rating erro pelo parametro")
+    public void TestRetunExceptionWhenGetProductByWrongId() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/api/v1/fresh-products/list-product/0"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Nao foi encontrado nenhum produto com esse ID")));
+    }
+
 }

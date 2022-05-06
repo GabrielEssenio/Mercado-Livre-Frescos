@@ -3,7 +3,11 @@ import com.mercadolibre.grupo1.projetointegrador.entities.enums.ProductCategory;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Nayara Coca
@@ -19,6 +23,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,5 +35,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller_id", referencedColumnName = "id")
     private Seller seller;
+    @Max(value = 5, message = "O valor maximo da nota é 5")@Min(value = 1, message = "O valor minimo da nota é 1")
+    private Double AverageRating;
 
+    @OneToMany(mappedBy = "product")
+    private List<Feedback> feedbacks;
 }

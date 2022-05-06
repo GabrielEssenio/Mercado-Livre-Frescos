@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO {
+
     private Long productId;
     @NotNull(message = "O nome do produto não pode estar vazio")
     private String name;
@@ -26,5 +27,7 @@ public class ProductDTO {
     private BigDecimal price;
     @NotNull(message = "A categoria não pode estar vazia")
     private ProductCategory category;
+    @NotNull(message = "A avaliaçao do produto nao pode estar vazia")
+    private Double AverageRating;
 
 }
