@@ -156,5 +156,14 @@ public class ControllerExceptionHandler {
                         request.getRequestURI());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
+
+    @ExceptionHandler(InvalidRatingException.class)
+    public ResponseEntity<ExceptionDTO> invalidRatingException(InvalidRatingException e,
+                                                                 HttpServletRequest request) {
+        ExceptionDTO response =
+                ExceptionDTO.badRequest(e.getMessage(),
+                        request.getRequestURI());
+        return ResponseEntity.badRequest().body(response);
+    }
  }
 

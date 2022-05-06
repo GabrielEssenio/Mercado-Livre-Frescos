@@ -1,14 +1,12 @@
 package com.mercadolibre.grupo1.projetointegrador.controller;
 
 import com.mercadolibre.grupo1.projetointegrador.dtos.ProductDTO;
+import com.mercadolibre.grupo1.projetointegrador.entities.Feedback;
 import com.mercadolibre.grupo1.projetointegrador.entities.enums.ProductCategory;
 import com.mercadolibre.grupo1.projetointegrador.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,4 +35,31 @@ public class ProductController {
         List<ProductDTO> productByCategory = productService.listProductByCategory(productCategory);
         return ResponseEntity.ok().body(productByCategory);
     }
+
+    /**
+     * @author Gabriel Essenio
+     * @param rating
+     * @return
+     * REQUISITO 06
+     * Pega lista de produto pela avaliaçao dos produtos
+     */
+    @GetMapping("/rating")
+    public ResponseEntity<List<ProductDTO>> listProductByMinRating( @RequestParam(required = false, name = "rating") Double rating) {
+        List<ProductDTO> productByCategory = productService.listProductByMinRating(rating);
+        return ResponseEntity.ok().body(productByCategory);
+    }
+
+    /**
+     * @author
+     * @param idProduct
+     * @return
+     * REQUISITO 06
+     * Pega produto pelo Id do produto
+     */
+    @GetMapping("/list-product/{idProduct}")
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long idProduct) {
+        ProductDTO productById = productService.getProductById(idProduct);
+        return ResponseEntity.ok().body(productById);
+    }
+
 }

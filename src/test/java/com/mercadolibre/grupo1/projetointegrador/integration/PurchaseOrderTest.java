@@ -48,7 +48,7 @@ public class PurchaseOrderTest {
     @WithMockUser(username = "customer1", roles = {"CUSTOMER"})
     public void showProductsInOrdersTest() throws Exception {
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/fresh-products/orders/{idOrder}", 1))
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/fresh-products/orders/1"))
                 .andDo(print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 

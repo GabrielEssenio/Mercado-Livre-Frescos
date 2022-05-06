@@ -25,6 +25,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 /**
  * Classe de configuracao do spring security
+ *
  * @author Weverton Bruno
  */
 @Configuration
@@ -42,6 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     private static final String[] CUSTOMER_REQUESTS = {
+            BASE_URL + "/update-feedback",
+            BASE_URL + "/feedback/**",
             BASE_URL + "/orders", BASE_URL + "/orders/**"
     };
 
@@ -50,8 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     };
 
     private static final String[] PUBLIC_GET_REQUESTS = {
-        BASE_URL + "/list",
-        BASE_URL + "/"
+            BASE_URL + "/list",
+            BASE_URL + "/list-product/**",
+            BASE_URL + "/rating",
+            BASE_URL + "/"
     };
 
     private static final String[] SWAGGER_REQUESTS = {
@@ -81,7 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new NoEncoder();
     }
 
@@ -94,11 +99,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, PUBLIC_POST_REQUESTS).permitAll()
-                    .antMatchers(HttpMethod.GET, PUBLIC_GET_REQUESTS).permitAll()
+                .antMatchers(HttpMethod.POST, PUBLIC_POST_REQUESTS).permitAll()
+                .antMatchers(HttpMethod.GET, PUBLIC_GET_REQUESTS).permitAll()
 
-                    .antMatchers(AGENT_REQUESTS).hasRole("AGENT")
-                    .antMatchers(CUSTOMER_REQUESTS).hasRole("CUSTOMER")
+                .antMatchers(AGENT_REQUESTS).hasRole("AGENT")
+                .antMatchers(CUSTOMER_REQUESTS).hasRole("CUSTOMER")
 
                     .antMatchers(SWAGGER_REQUESTS).permitAll()
                     .antMatchers("/h2-console/**").permitAll()
@@ -106,7 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
-                    .accessDeniedHandler(accessDeniedHandler())
+                .accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .addFilter(getValidationFilter())
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -122,7 +127,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource(){
+    CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
 
