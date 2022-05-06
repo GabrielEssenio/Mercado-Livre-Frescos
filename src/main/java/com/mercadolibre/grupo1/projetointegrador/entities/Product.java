@@ -1,4 +1,5 @@
 package com.mercadolibre.grupo1.projetointegrador.entities;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mercadolibre.grupo1.projetointegrador.entities.enums.ProductCategory;
 import lombok.*;
 
@@ -39,5 +40,6 @@ public class Product {
     private Double AverageRating;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<Feedback> feedbacks;
 }

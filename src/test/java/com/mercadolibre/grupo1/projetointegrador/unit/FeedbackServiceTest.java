@@ -65,7 +65,9 @@ public class FeedbackServiceTest {
         product1.setPrice(BigDecimal.valueOf(350));
         product1.setCategory(ProductCategory.FRESCO);
         product1.setAverageRating(4.0);
-        product1.setFeedbacks(Arrays.asList(feedback1, feedback2));
+        product1.setFeedbacks(new ArrayList<>(Arrays.asList(feedback1, feedback2)));
+        feedback1.setProduct(product1);
+        feedback2.setProduct(product1);
         return product1;
     }
 
@@ -89,20 +91,19 @@ public class FeedbackServiceTest {
      * REQUISITO06
      * Testa ao criar um feedback do produto, se é calculado a media da nota do produto
      */
-//    @Transactional
-//    @Test
-//    @DisplayName("Testa ao criar um feedback do produto, se é calculado a media da nota do produto")
-//    public void testListProductByCategory() {
-//        Feedback feedback1 = gerarFeedback(1L, 2.0);
-//        Product product = gerarProduct();
-//        product.getFeedbacks().add(feedback1);
-//        feedback1.setProduct(product);
-//        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-//        Mockito.when(feedbackRepository.save(feedback1)).thenReturn(feedback1);
-//        FeedbackDTO feedbackDTO = feedbackService.createFeedbackProduct(1L, feedback1);
-//        Assertions.assertEquals(2.0, feedbackDTO.getRating());
-//        Assertions.assertEquals(3.0, product.getAverageRating());
-//    }
+    @Test
+    @DisplayName("Testa ao criar um feedback do produto, se é calculado a media da nota do produto")
+    public void testListProductByCategory() {
+        Feedback feedback1 = gerarFeedback(1L, 2.0);
+        Product product = gerarProduct();
+        product.getFeedbacks().add(feedback1);
+        feedback1.setProduct(product);
+        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+        Mockito.when(feedbackRepository.save(feedback1)).thenReturn(feedback1);
+        FeedbackDTO feedbackDTO = feedbackService.createFeedbackProduct(1L, feedback1);
+        Assertions.assertEquals(2.0, feedbackDTO.getRating());
+        Assertions.assertEquals(2.75, product.getAverageRating());
+    }
 
     /**
      * @author Gabriel Essenio
@@ -138,31 +139,31 @@ public class FeedbackServiceTest {
      * REQUISITO06
      * Testa ao pegar os feedbacks de produto,se retorna os corretamente
      */
-//    @Test
-//    @Transactional
-//    @DisplayName("Testa ao pegar os feedbacks de produto,se retorna os corretamente")
-//    public void testReturnListFeedbacksByProduct(){
-////        Feedback feedback1 = gerarFeedback(null,2.0);
-//        Product product = gerarProduct();
-////        feedbackService.createFeedbackProduct(1L, feedback1);
-//        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-////        Mockito.when(feedbackRepository.save(feedback1)).thenReturn(feedback1);
-//        List<FeedbackDTO> listFeedbacks = feedbackService.getFeedBacksByProduct(1L);
-//        Assertions.assertEquals(listFeedbacks.size(),2);
-//    }
+    @Test
+    @DisplayName("Testa ao pegar os feedbacks de produto,se retorna os corretamente")
+    public void testReturnListFeedbacksByProduct(){
+//        Feedback feedback1 = gerarFeedback(null,2.0);
+        Product product = gerarProduct();
+//        feedbackService.createFeedbackProduct(1L, feedback1);
+        Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+//        Mockito.when(feedbackRepository.save(feedback1)).thenReturn(feedback1);
+        List<FeedbackDTO> listFeedbacks = feedbackService.getFeedBacksByProduct(1L);
+        Assertions.assertEquals(listFeedbacks.size(),2);
+    }
     /**
      * @author Gabriel Essenio
      * REQUISITO06
      * Testa atualizar o feedbacks passado pelo parametro
      */
-//    @Test
-//    @Transactional
-//    @DisplayName("Testa atualizar o feedbacks passado pelo parametro")
-//    public void testUpdateFeedbackById() {
-//        Feedback feedback1 = gerarFeedback(1L, 2.0);
-//        Mockito.when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback1));
-//        Mockito.when(feedbackRepository.save(feedback1)).thenReturn(feedback1);
-//        FeedbackDTO feedbackDTO = feedbackService.updateFeedbackProductByIdFeedback(1L, feedback1);
-//        Assertions.assertEquals(feedbackDTO.getRating(), 2.0);
-//    }
+    @Test
+    @Transactional
+    @DisplayName("Testa atualizar o feedbacks passado pelo parametro")
+    public void testUpdateFeedbackById() {
+        Product product = gerarProduct();
+        Feedback feedback = product.getFeedbacks().get(0);
+        Mockito.when(feedbackRepository.findById(1L)).thenReturn(Optional.of(feedback));
+        Mockito.when(feedbackRepository.save(feedback)).thenReturn(feedback);
+        FeedbackDTO feedbackDTO = feedbackService.updateFeedbackProductByIdFeedback(1L, feedback);
+        Assertions.assertEquals(feedbackDTO.getRating(), 4.0);
+    }
 }
