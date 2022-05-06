@@ -58,6 +58,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             BASE_URL + "/rating",
             BASE_URL + "/"
     };
+
+    private static final String[] SWAGGER_REQUESTS = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
+
     private final UserDetailsService userDetailsService;
     private final JWTUtils jwtUtils;
 
@@ -90,9 +105,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AGENT_REQUESTS).hasRole("AGENT")
                 .antMatchers(CUSTOMER_REQUESTS).hasRole("CUSTOMER")
 
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
+                    .antMatchers(SWAGGER_REQUESTS).permitAll()
+                    .antMatchers("/h2-console/**").permitAll()
+                    .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
@@ -103,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("h2-console/**").antMatchers(SWAGGER_REQUESTS);
     }
 
     private JWTValidationFilter getValidationFilter() throws Exception {
